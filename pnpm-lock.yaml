@@ -18,7 +18,7 @@ importers:
         specifier: ^25.9.3
         version: 25.9.3
       '@types/w3c-web-usb':
-        specifier: ^1.0.6
+        specifier: ^1.0.14
         version: 1.0.14
       '@vitest/coverage-v8':
         specifier: ^4.1.8
