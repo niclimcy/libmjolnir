@@ -63,6 +63,12 @@ export class OdinDevice {
   _flashSessionStarted = false
   _lz4Supported = false
 
+  /**
+   * A transferIn left pending by a timed-out _emptyReceive. WebUSB cannot
+   * cancel transfers, so the next receive must consume it.
+   */
+  _orphanedReceive: Promise<USBInTransferResult> | undefined
+
   constructor(usbDevice: USBDevice, options?: Partial<DeviceOptions>) {
     this.usbDevice = usbDevice
     this.deviceOptions = { ...DEFAULT_DEVICE_OPTIONS, ...options }
@@ -561,11 +567,7 @@ export class OdinDevice {
   async receivePacket<T extends InboundPacket>(type: { new (): T }, timeout?: number): Promise<T> {
     const packet = new type()
 
-    const data = await timeoutPromise(
-      this.usbDevice.transferIn(this.inEndpointNum, packet.size),
-      '[device] unable to receive packet from device',
-      timeout ?? this.deviceOptions.timeout
-    )
+    const data = await this._receive(packet.size, timeout ?? this.deviceOptions.timeout)
     if (this.deviceOptions.logging) console.log('received packet', packet)
 
     if (data.data == null || data.status !== 'ok') {
@@ -583,14 +585,47 @@ export class OdinDevice {
     return packet
   }
 
+  async _receive(length: number, timeout: number): Promise<USBInTransferResult> {
+    const orphan = this._orphanedReceive
+    if (orphan) {
+      this._orphanedReceive = undefined
+      let result: USBInTransferResult
+      try {
+        result = await timeoutPromise(
+          orphan,
+          '[device] unable to receive packet from device',
+          timeout
+        )
+      } catch (error) {
+        this._orphanedReceive = orphan
+        throw error
+      }
+      if (result.data != null && result.data.byteLength > 0) {
+        return result
+      }
+      // the empty receive arrived late; discard it and receive normally
+    }
+
+    return timeoutPromise(
+      this.usbDevice.transferIn(this.inEndpointNum, length),
+      '[device] unable to receive packet from device',
+      timeout
+    )
+  }
+
   async _emptyReceive(timeout?: number) {
+    // 1024 covers the largest inbound packet in case a real packet lands here
+    const transfer = this._orphanedReceive ?? this.usbDevice.transferIn(this.inEndpointNum, 1024)
+    this._orphanedReceive = undefined
+
     try {
       await timeoutPromise(
-        this.usbDevice.transferIn(this.inEndpointNum, 1),
+        transfer,
         '[device] device did not respond to empty receive, continuing...',
         timeout ?? EMPTY_RECEIVE_TIMEOUT
       )
     } catch (error) {
+      this._orphanedReceive = transfer
       console.warn(error)
     }
   }
