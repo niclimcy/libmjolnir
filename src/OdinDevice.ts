@@ -112,10 +112,10 @@ export class OdinDevice {
       const usbConfiguration = this.usbDevice.configuration;
 
       for (const interfaceIndex in usbConfiguration.interfaces) {
-        const usbInterface = usbConfiguration.interfaces[interfaceIndex];
+        const usbInterface = usbConfiguration.interfaces[interfaceIndex]!;
 
         for (const altIndex in usbInterface.alternates) {
-          const altInterface = usbInterface.alternates[altIndex];
+          const altInterface = usbInterface.alternates[altIndex]!;
 
           const outEndpoint = altInterface.endpoints.find(endpoint => endpoint.direction === 'out')?.endpointNumber || -1;
           const inEndpoint = altInterface.endpoints.find(endpoint => endpoint.direction === 'in')?.endpointNumber || -1;
@@ -423,8 +423,8 @@ export class OdinDevice {
     for (let sequenceIndex = 0; sequenceIndex < sequences.length; sequenceIndex++) {
       console.log(`sending sequence ${sequenceIndex + 1} of ${sequences.length}`);
 
-      const { decompressedSize } = sequences[sequenceIndex];
-      let { data } = sequences[sequenceIndex];
+      const { decompressedSize } = sequences[sequenceIndex]!;
+      let { data } = sequences[sequenceIndex]!;
       const isLastSequence = sequenceIndex === (sequences.length - 1);
 
       if (!lz4) {
@@ -501,7 +501,7 @@ export class OdinDevice {
     if (data.data?.byteLength !== packet.size && !packet.sizeVariable) {
       throw new Error('incorrect size received');
     }
-    packet.data = new Uint8Array(data.data.buffer);
+    packet.data = new Uint8Array(data.data.buffer as ArrayBuffer);
     packet.receivedSize = data.data.byteLength;
 
     packet.unpack();

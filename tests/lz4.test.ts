@@ -120,9 +120,9 @@ describe('lz4Sequences', () => {
     const sequences = Array.from(lz4Sequences(frame, header, 1024 * 1024));
 
     expect(sequences).toHaveLength(1);
-    expect(sequences[0].decompressedSize).toBe(100000);
-    expect(sequences[0].data).toHaveLength(4 + 10 + 4 + 20);
-    expect(sequences[0].data[0]).toBe(10);
+    expect(sequences[0]!.decompressedSize).toBe(100000);
+    expect(sequences[0]!.data).toHaveLength(4 + 10 + 4 + 20);
+    expect(sequences[0]!.data[0]).toBe(10);
   });
 
   test('splits blocks across sequences by decompressed size', () => {
@@ -132,9 +132,9 @@ describe('lz4Sequences', () => {
     const sequences = Array.from(lz4Sequences(frame, header, 64 * 1024));
 
     expect(sequences).toHaveLength(2);
-    expect(sequences[0].decompressedSize).toBe(64 * 1024);
-    expect(sequences[0].data).toHaveLength(4 + 10);
-    expect(sequences[1].decompressedSize).toBe(100000 - 64 * 1024);
-    expect(sequences[1].data).toHaveLength(4 + 20);
+    expect(sequences[0]!.decompressedSize).toBe(64 * 1024);
+    expect(sequences[0]!.data).toHaveLength(4 + 10);
+    expect(sequences[1]!.decompressedSize).toBe(100000 - 64 * 1024);
+    expect(sequences[1]!.data).toHaveLength(4 + 20);
   });
 });

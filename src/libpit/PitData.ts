@@ -14,7 +14,7 @@ export class PitData {
       this.fileType === otherPitData.fileType &&
       this.boardType === otherPitData.boardType &&
       this.lunCount === otherPitData.lunCount &&
-      this.entries.every((entry, index) => entry.matches(otherPitData.entries[index]));
+      this.entries.every((entry, index) => entry.matches(otherPitData.entries[index]!));
   }
 
   clear () {
@@ -40,8 +40,8 @@ export class PitData {
   }
 
   unpackInteger (data: Uint8Array, offset: number) {
-    return data[offset]  | (data[offset + 1] << 8) |
-      (data[offset + 2] << 16) | (data[offset + 3] << 24);
+    return data[offset]! | (data[offset + 1]! << 8) |
+      (data[offset + 2]! << 16) | (data[offset + 3]! << 24);
   }
 
   packInteger (data: Uint8Array, offset: number, value: number) {
@@ -52,7 +52,7 @@ export class PitData {
   }
 
   unpackShort (data: Uint8Array, offset: number) {
-    return data[offset] | (data[offset + 1] << 8);
+    return data[offset]! | (data[offset + 1]! << 8);
   }
 
   packShort (data: Uint8Array, offset: number, value: number) {
@@ -60,7 +60,7 @@ export class PitData {
     data[offset + 1] = (value & 0xFF00) >> 8;
   }
 
-  unpackCharArray (data: Uint8Array, offset: number, length: number) : Uint8Array {
+  unpackCharArray (data: Uint8Array, offset: number, length: number) : Uint8Array<ArrayBuffer> {
     return data.slice(offset, offset + length);
   }
 
@@ -128,23 +128,25 @@ export class PitData {
     for (let i = 0; i < this.entryCount; i++) {
       entryOffset = constants.HeaderDataSize + i * constants.EntryDataSize;
 
-      this.packInteger(data, entryOffset, this.entries[i].binaryType);
+      const entry = this.entries[i]!;
 
-      this.packInteger(data, entryOffset + 4, this.entries[i].deviceType);
-      this.packInteger(data, entryOffset + 8, this.entries[i].identifier);
-      this.packInteger(data, entryOffset + 12, this.entries[i].attributes);
+      this.packInteger(data, entryOffset, entry.binaryType);
 
-      this.packInteger(data, entryOffset + 16, this.entries[i].updateAttributes);
+      this.packInteger(data, entryOffset + 4, entry.deviceType);
+      this.packInteger(data, entryOffset + 8, entry.identifier);
+      this.packInteger(data, entryOffset + 12, entry.attributes);
 
-      this.packInteger(data, entryOffset + 20, this.entries[i].blockSizeOrOffset);
-      this.packInteger(data, entryOffset + 24, this.entries[i].blockCount);
+      this.packInteger(data, entryOffset + 16, entry.updateAttributes);
 
-      this.packInteger(data, entryOffset + 28, this.entries[i].fileOffset);
-      this.packInteger(data, entryOffset + 32, this.entries[i].fileSize);
+      this.packInteger(data, entryOffset + 20, entry.blockSizeOrOffset);
+      this.packInteger(data, entryOffset + 24, entry.blockCount);
 
-      this.packCharArray(data, entryOffset + 36, this.entries[i]._partitionName);
-      this.packCharArray(data, entryOffset + 36 + constants.PartitionNameMaxLength, this.entries[i]._flashFilename);
-      this.packCharArray(data, entryOffset + 36 + constants.PartitionNameMaxLength + constants.FlashFilenameMaxLength, this.entries[i]._fotaFilename);
+      this.packInteger(data, entryOffset + 28, entry.fileOffset);
+      this.packInteger(data, entryOffset + 32, entry.fileSize);
+
+      this.packCharArray(data, entryOffset + 36, entry._partitionName);
+      this.packCharArray(data, entryOffset + 36 + constants.PartitionNameMaxLength, entry._flashFilename);
+      this.packCharArray(data, entryOffset + 36 + constants.PartitionNameMaxLength + constants.FlashFilenameMaxLength, entry._fotaFilename);
     }
   }
 
@@ -165,7 +167,7 @@ export class PitData {
   }
 
   getEntry (index: number) : PitEntry {
-    return this.entries[index];
+    return this.entries[index]!;
   }
 
   findEntryByName (partitionName: string) : PitEntry | undefined {

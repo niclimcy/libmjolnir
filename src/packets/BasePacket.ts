@@ -1,6 +1,6 @@
 export class BasePacket {
   size: number;
-  data: Uint8Array;
+  data: Uint8Array<ArrayBuffer>;
   _buffer: ArrayBuffer;
 
   constructor(size: number) {

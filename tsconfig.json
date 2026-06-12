@@ -1,24 +1,25 @@
 {
   "compilerOptions": {
-    "lib": ["es2019", "dom"],
-    "target": "es2019",
-    "module": "es2020",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "outDir": "dist",
-    "declaration": true,
-    "experimentalDecorators": true,
-    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "types": ["w3c-web-usb", "jest", "node"],
+
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+
     "strict": true,
-    "skipLibCheck": true,
-    "importHelpers": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
   },
-  "include": ["src/*", "tests"],
-  "paths": {
-    "@/*": ["src/*"]
-  }
+  "include": ["src", "tests"]
 }

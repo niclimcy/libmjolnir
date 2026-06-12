@@ -6,8 +6,8 @@ import { FlashPartFileTransferPacket } from '../src/packets/outbound/FlashPartFi
 import { OutboundPacket } from '../src/packets/outbound/OutboundPacket';
 
 function packedInteger (packet: OutboundPacket, offset: number) {
-  return packet.data[offset] | (packet.data[offset + 1] << 8) |
-    (packet.data[offset + 2] << 16) | (packet.data[offset + 3] << 24);
+  return packet.data[offset]! | (packet.data[offset + 1]! << 8) |
+    (packet.data[offset + 2]! << 16) | (packet.data[offset + 3]! << 24);
 }
 
 describe('BeginSessionPacket', () => {

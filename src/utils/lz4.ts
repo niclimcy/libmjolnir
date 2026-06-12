@@ -35,7 +35,7 @@ export function parseLz4FrameHeader (data: Uint8Array): Lz4FrameHeader {
   }
 
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-  const flg = data[4];
+  const flg = data[4]!;
 
   const version = (flg >> 6) & 0x03;
   if (version !== 1) {
@@ -57,7 +57,7 @@ export function parseLz4FrameHeader (data: Uint8Array): Lz4FrameHeader {
     throw new Error('LZ4 block independence must be enabled');
   }
 
-  const blockMaxSizeCode = (data[5] >> 4) & 0x07;
+  const blockMaxSizeCode = (data[5]! >> 4) & 0x07;
   const blockMaxSize = BLOCK_MAX_SIZES[blockMaxSizeCode];
   if (!blockMaxSize) {
     throw new Error(`Invalid block max size code: ${blockMaxSizeCode}`);
@@ -80,13 +80,13 @@ export function decompressLz4Block (src: Uint8Array, maxDecompressedSize: number
   let dstIndex = 0;
 
   while (srcIndex < src.length) {
-    const token = src[srcIndex++];
+    const token = src[srcIndex++]!;
 
     let literalLength = token >> 4;
     if (literalLength === 15) {
       let lengthByte;
       do {
-        lengthByte = src[srcIndex++];
+        lengthByte = src[srcIndex++]!;
         literalLength += lengthByte;
       } while (lengthByte === 255);
     }
@@ -99,7 +99,7 @@ export function decompressLz4Block (src: Uint8Array, maxDecompressedSize: number
       break;
     }
 
-    const offset = src[srcIndex] | (src[srcIndex + 1] << 8);
+    const offset = src[srcIndex]! | (src[srcIndex + 1]! << 8);
     srcIndex += 2;
 
     if (offset === 0 || offset > dstIndex) {
@@ -110,14 +110,14 @@ export function decompressLz4Block (src: Uint8Array, maxDecompressedSize: number
     if ((token & 0x0F) === 15) {
       let lengthByte;
       do {
-        lengthByte = src[srcIndex++];
+        lengthByte = src[srcIndex++]!;
         matchLength += lengthByte;
       } while (lengthByte === 255);
     }
 
     let matchIndex = dstIndex - offset;
     for (let i = 0; i < matchLength; i++) {
-      dst[dstIndex++] = dst[matchIndex++];
+      dst[dstIndex++] = dst[matchIndex++]!;
     }
   }
 
