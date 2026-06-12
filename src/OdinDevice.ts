@@ -154,8 +154,8 @@ export class OdinDevice {
         );
       }
     } catch (errorMsg) {
-      this.deviceOptions.logging && console.log(errorMsg);
-      throw new Error('Unable to open and claim device');
+      if (this.deviceOptions.logging) console.log(errorMsg);
+      throw new Error('Unable to open and claim device', { cause: errorMsg });
     }
 
     return this.handshake();
@@ -182,7 +182,7 @@ export class OdinDevice {
       '[handshake] unable to send ODIN handshake',
       this.deviceOptions.timeout
     );
-    this.deviceOptions.logging && console.log(`sent: ${helloMsg}, status: ${outResult.status}`);
+    if (this.deviceOptions.logging) console.log(`sent: ${helloMsg}, status: ${outResult.status}`);
     if (outResult.status !== 'ok') {
       throw new Error(`handshake transmit status ${outResult.status}`);
     }
@@ -198,7 +198,7 @@ export class OdinDevice {
 
     const stringResult = ByteArray.toString(new Uint8Array(inResult.data.buffer));
 
-    this.deviceOptions.logging && console.log(`received: ${stringResult}`)
+    if (this.deviceOptions.logging) console.log(`received: ${stringResult}`)
     if (stringResult !== acknowledgeMsg) {
       throw new Error('handshake challenge mismatch');
     }
@@ -313,7 +313,7 @@ export class OdinDevice {
     let offset = 0;
 
     for (let i = 0; i < transferCount; i++) {
-      this.deviceOptions.logging && console.log(`getPitData: sending partial packet ${i+1} of ${transferCount}`);
+      if (this.deviceOptions.logging) console.log(`getPitData: sending partial packet ${i+1} of ${transferCount}`);
       await this.sendPacket(new DumpPartPitFilePacket(i));
 
       const receivePitPartResponse = await this.receivePacket(ReceiveFilePartPacket);
@@ -472,14 +472,14 @@ export class OdinDevice {
   async sendPacket (packet: OutboundPacket, timeout?: number) {
     packet.pack();
 
-    this.deviceOptions.logging && console.log('sending', packet);
+    if (this.deviceOptions.logging) console.log('sending', packet);
 
     return timeoutPromise(
       this.usbDevice.transferOut(this.outEndpointNum, packet.data),
       '[device] unable to send packet',
       timeout ?? this.deviceOptions.timeout
     ).then(result => {
-      this.deviceOptions.logging && console.log('sendPacket response', result);
+      if (this.deviceOptions.logging) console.log('sendPacket response', result);
       return result;
     });
   }
@@ -492,7 +492,7 @@ export class OdinDevice {
       '[device] unable to receive packet from device',
       timeout ?? this.deviceOptions.timeout
     )
-    this.deviceOptions.logging && console.log('received packet', packet);
+    if (this.deviceOptions.logging) console.log('received packet', packet);
 
     if (data.data == null || data.status !== 'ok') {
       throw new Error('receivePacket failed');
