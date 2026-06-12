@@ -3,8 +3,8 @@ import { FileTransferPacket, FileTransferRequest } from './FileTransferPacket';
 export class FlashPartFileTransferPacket extends FileTransferPacket {
   sequenceByteCount: number;
 
-  constructor (sequenceByteCount: number) {
-    super(FileTransferRequest.Part);
+  constructor (sequenceByteCount: number, lz4 = false) {
+    super(lz4 ? FileTransferRequest.Lz4Part : FileTransferRequest.Part);
     this.sequenceByteCount = sequenceByteCount;
   }
 

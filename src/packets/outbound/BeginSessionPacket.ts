@@ -10,6 +10,6 @@ export class BeginSessionPacket extends SessionSetupPacket {
   pack() {
     super.pack();
     // Odin protocol version
-    this.packInteger(BeginSessionPacket.dataSize, 0x4);
+    this.packInteger(SessionSetupPacket.dataSize, 0x4);
   }
 }

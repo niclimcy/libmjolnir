@@ -1,19 +1,19 @@
 import { ByteArray } from '../utils/ByteArray';
 import { constants } from './constants';
 
-enum EntryBinaryType
+export enum EntryBinaryType
 {
   ApplicationProcessor = 0,
   CommunicationProcessor = 1
 }
 
-enum EntryDeviceType
+export enum EntryDeviceType
 {
   OneNand = 0,
-  File, // FAT
-  MMC,
-  All, // ?
-  UFS
+  File = 1, // FAT
+  MMC = 2,
+  All = 3, // ?
+  UFS = 8
 }
 
 enum EntryAttribute

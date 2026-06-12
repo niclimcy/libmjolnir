@@ -4,7 +4,7 @@ import { constants } from './constants';
 
 export class PitData {
   _fileType = new Uint8Array(8);
-  _boardType = new Uint8Array(12);
+  _boardType = new Uint8Array(8);
   entryCount = 0;
   entries: PitEntry[] = [];
   lunCount = 0;
@@ -19,7 +19,7 @@ export class PitData {
 
   clear () {
     this._fileType = new Uint8Array(8);
-    this._boardType = new Uint8Array(12);
+    this._boardType = new Uint8Array(8);
     this.lunCount = 0;
     this.entryCount = 0;
     this.entries = [];
@@ -81,7 +81,7 @@ export class PitData {
     this.entries = new Array(this.entryCount);
 
     this._fileType = this.unpackCharArray(data, 8, 8);
-    this._boardType = this.unpackCharArray(data, 16, 12);
+    this._boardType = this.unpackCharArray(data, 16, 8);
 
     this.lunCount = this.unpackShort(data, 24);
 

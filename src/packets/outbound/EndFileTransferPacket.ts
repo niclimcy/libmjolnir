@@ -8,14 +8,14 @@ export enum FileTransferDestination {
 export class EndFileTransferPacket extends FileTransferPacket {
   destination: FileTransferDestination;
   sequenceByteCount: number;
-  unknown1: number;
+  binaryType: number;
   deviceType: number;
 
-  constructor (destination: FileTransferDestination, sequenceByteCount: number, unknown1: number, deviceType: number) {
-    super(FileTransferRequest.End);
+  constructor (destination: FileTransferDestination, sequenceByteCount: number, binaryType: number, deviceType: number, lz4 = false) {
+    super(lz4 ? FileTransferRequest.Lz4End : FileTransferRequest.End);
     this.destination = destination;
     this.sequenceByteCount = sequenceByteCount;
-    this.unknown1 = unknown1;
+    this.binaryType = binaryType;
     this.deviceType = deviceType;
   }
 
@@ -26,7 +26,7 @@ export class EndFileTransferPacket extends FileTransferPacket {
 
     this.packInteger(FileTransferPacket.dataSize, this.destination);
     this.packInteger(FileTransferPacket.dataSize + 4, this.sequenceByteCount);
-    this.packInteger(FileTransferPacket.dataSize + 8, this.unknown1);
+    this.packInteger(FileTransferPacket.dataSize + 8, this.binaryType);
     this.packInteger(FileTransferPacket.dataSize + 12, this.deviceType);
   }
 }

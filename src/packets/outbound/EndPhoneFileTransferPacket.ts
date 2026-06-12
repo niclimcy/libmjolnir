@@ -23,8 +23,8 @@ export class EndPhoneFileTransferPacket extends EndFileTransferPacket {
   fileIdentifier: TransferFileIdentifier;
   endOfFile: number;
 
-  constructor(sequenceByteCount: number, unknown1: number, chipIdentifier: number, fileIdentifier: TransferFileIdentifier, endOfFile: boolean) {
-    super(FileTransferDestination.Phone, sequenceByteCount, unknown1, chipIdentifier);
+  constructor(sequenceByteCount: number, binaryType: number, chipIdentifier: number, fileIdentifier: TransferFileIdentifier, endOfFile: boolean, lz4 = false) {
+    super(FileTransferDestination.Phone, sequenceByteCount, binaryType, chipIdentifier, lz4);
     this.fileIdentifier = fileIdentifier;
     this.endOfFile = endOfFile ? 1 : 0;
   }

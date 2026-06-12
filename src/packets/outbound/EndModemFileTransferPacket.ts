@@ -3,8 +3,8 @@ import { EndFileTransferPacket, FileTransferDestination } from './EndFileTransfe
 export class EndModemFileTransferPacket extends EndFileTransferPacket {
   endOfFile: number;
 
-  constructor(sequenceByteCount: number, unknown1: number, chipIdentifier: number, endOfFile: boolean) {
-    super(FileTransferDestination.Modem, sequenceByteCount, unknown1, chipIdentifier);
+  constructor(sequenceByteCount: number, binaryType: number, chipIdentifier: number, endOfFile: boolean, lz4 = false) {
+    super(FileTransferDestination.Modem, sequenceByteCount, binaryType, chipIdentifier, lz4);
     this.endOfFile = endOfFile ? 1 : 0;
   }
 

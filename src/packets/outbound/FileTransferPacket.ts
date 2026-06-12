@@ -4,7 +4,10 @@ export enum FileTransferRequest {
   Flash = 0x00,
   Dump = 0x01,
   Part = 0x02,
-  End = 0x03
+  End = 0x03,
+  Lz4Flash = 0x05,
+  Lz4Part = 0x06,
+  Lz4End = 0x07
 }
 
 export class FileTransferPacket extends ControlPacket {
