@@ -1,5 +1,5 @@
 {
-  "name": "libmjolnir",
+  "name": "@lineageos-infra/libmjolnir",
   "version": "0.6.0",
   "description": "WebUSB library for communicating with Samsung devices in Download Mode",
   "type": "module",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/r3pwn/libmjolnir.git"
+    "url": "git+https://github.com/lineageos-infra/libmjolnir.git"
   },
   "keywords": [
     "mjolnir",
@@ -37,7 +37,7 @@
   "files": [
     "/dist"
   ],
-  "homepage": "https://github.com/r3pwn/libmjolnir",
+  "homepage": "https://github.com/lineageos-infra/libmjolnir",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",

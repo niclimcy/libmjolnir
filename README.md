@@ -6,11 +6,9 @@ A WebUSB implementation of the Odin protocol, used for interfacing with Samsung 
 
 ### Build status
 
-- [![Build Library](https://github.com/r3pwn/libmjolnir/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/r3pwn/libmjolnir/actions/workflows/build.yml)
-- [![Unit Tests](https://github.com/r3pwn/libmjolnir/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/r3pwn/libmjolnir/actions/workflows/unit-tests.yml)
-- [![Deploy to Github Pages](https://github.com/r3pwn/libmjolnir/actions/workflows/deploy.yml/badge.svg)](https://github.com/r3pwn/libmjolnir/actions/workflows/deploy.yml)
-
-### [Known issues](https://github.com/r3pwn/libmjolnir/wiki/Known-issues)
+- [![Build Library](https://github.com/lineageos-infra/libmjolnir/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/lineageos-infra/libmjolnir/actions/workflows/build.yml)
+- [![Unit Tests](https://github.com/lineageos-infra/libmjolnir/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/lineageos-infra/libmjolnir/actions/workflows/unit-tests.yml)
+- [![Deploy to Github Pages](https://github.com/lineageos-infra/libmjolnir/actions/workflows/deploy.yml/badge.svg)](https://github.com/lineageos-infra/libmjolnir/actions/workflows/deploy.yml)
 
 ### Working features
 
