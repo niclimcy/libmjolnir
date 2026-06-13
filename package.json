@@ -17,11 +17,9 @@
   "scripts": {
     "build": "tsdown",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "tsc",
+    "format": "prettier --write *.config.ts *.config.mjs src/ tests/",
+    "type-check": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest",
     "prepare": "husky"
   },
   "repository": {

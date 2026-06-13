@@ -1,4 +1,4 @@
 pnpm run lint
-pnpm run typecheck
-pnpm run format:check
+pnpm run type-check
+pnpm run format --check --no-write
 pnpm run test
