@@ -85,7 +85,7 @@ export class PitData {
 
     this.entryCount = this.unpackInteger(data, 4)
 
-    this.entries = new Array(this.entryCount)
+    this.entries = new Array<PitEntry>(this.entryCount)
 
     this._fileType = this.unpackCharArray(data, 8, 8)
     this._boardType = this.unpackCharArray(data, 16, 8)

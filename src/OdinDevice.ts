@@ -315,7 +315,7 @@ export class OdinDevice {
    */
   async sendFile(
     fileData: Uint8Array,
-    binaryType: number,
+    binaryType: EntryBinaryType,
     deviceType: number,
     fileIdentifier: number
   ) {
@@ -358,7 +358,7 @@ export class OdinDevice {
    */
   async sendLz4File(
     fileData: Uint8Array,
-    binaryType: number,
+    binaryType: EntryBinaryType,
     deviceType: number,
     fileIdentifier: number
   ) {
@@ -406,7 +406,7 @@ export class OdinDevice {
   async _sendFileSequence(
     sequenceData: Uint8Array,
     endByteCount: number,
-    binaryType: number,
+    binaryType: EntryBinaryType,
     deviceType: number,
     fileIdentifier: number,
     isLastSequence: boolean,

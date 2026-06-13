@@ -8,7 +8,7 @@ import { WebSerialTransport } from './transport/WebSerialTransport'
  */
 export const requestDevice = async function (options?: Partial<DeviceOptions>) {
   if (!navigator.usb) {
-    return Promise.reject('Browser missing WebUSB feature')
+    return Promise.reject(new Error('Browser missing WebUSB feature'))
   }
   return navigator.usb
     .requestDevice({ filters: constants.UsbConstants.DeviceFilters })
@@ -24,7 +24,7 @@ export const requestDevice = async function (options?: Partial<DeviceOptions>) {
  */
 export const requestSerialDevice = async function (options?: Partial<DeviceOptions>) {
   if (!navigator.serial) {
-    return Promise.reject('Browser missing Web Serial feature')
+    return Promise.reject(new Error('Browser missing Web Serial feature'))
   }
   const port = await navigator.serial.requestPort({
     filters: constants.SerialConstants.PortFilters

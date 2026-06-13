@@ -198,7 +198,7 @@ describe('WebSerialTransport', () => {
     const transport = new WebSerialTransport(port)
     let handler!: (event: Event) => void
     const serial = {
-      addEventListener: vi.fn((_type, listener) => {
+      addEventListener: vi.fn((_type: string, listener: (event: Event) => void) => {
         handler = listener
       }),
       removeEventListener: vi.fn()

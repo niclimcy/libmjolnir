@@ -24,13 +24,14 @@ function createFakeTransport() {
   const queue: Uint8Array<ArrayBuffer>[] = []
   const transport = {
     connect: vi.fn(async () => {}),
-    send: vi.fn(async (data: Uint8Array<ArrayBuffer>) => {
+    send: vi.fn((data: Uint8Array<ArrayBuffer>) => {
       sent.push(data.slice())
+      return Promise.resolve()
     }),
-    receive: vi.fn(async () => {
+    receive: vi.fn(() => {
       const next = queue.shift()
       if (!next) throw new Error('fake transport: no queued response')
-      return next
+      return Promise.resolve(next)
     }),
     emptyReceive: vi.fn(async () => {}),
     reset: vi.fn(async () => {}),
@@ -157,7 +158,7 @@ describe('onDisconnect', () => {
     const callback = vi.fn()
     device.onDisconnect(callback)
 
-    const wrapper = transport.onDisconnect.mock.calls[0]![0]
+    const wrapper = transport.onDisconnect.mock.calls[0]![0] as () => void
     wrapper()
 
     expect(device._flashSessionStarted).toBe(false)

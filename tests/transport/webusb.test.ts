@@ -69,8 +69,9 @@ describe('WebUsbTransport.connect', () => {
 
   test('selects configuration 1 when none is active', async () => {
     const device = createFakeUsbDevice(undefined)
-    device.selectConfiguration.mockImplementation(async () => {
+    device.selectConfiguration.mockImplementation(() => {
       device.configuration = cdcConfig(0, 0)
+      return Promise.resolve()
     })
     const transport = new WebUsbTransport(device as unknown as USBDevice)
 
@@ -194,7 +195,7 @@ describe('WebUsbTransport.onDisconnect', () => {
     const device = createFakeUsbDevice()
     let handler!: (event: { device: unknown }) => void
     const usb = {
-      addEventListener: vi.fn((_type, listener) => {
+      addEventListener: vi.fn((_type: string, listener: (event: { device: unknown }) => void) => {
         handler = listener
       }),
       removeEventListener: vi.fn()

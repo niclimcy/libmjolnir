@@ -20,11 +20,12 @@ export class ResponsePacket extends InboundPacket {
     return 4
   }
 
-  async unpack() {
-    const receivedResponseType = this.unpackInteger(0)
-    if (receivedResponseType != this.responseType) {
+  unpack(): Promise<void> {
+    const receivedResponseType: ResponseType = this.unpackInteger(0)
+    if (receivedResponseType !== this.responseType) {
       this.responseType = receivedResponseType
-      throw new Error('requested and received response types differ')
+      return Promise.reject(new Error('requested and received response types differ'))
     }
+    return Promise.resolve()
   }
 }

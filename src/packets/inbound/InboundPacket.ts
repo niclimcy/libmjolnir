@@ -18,7 +18,7 @@ export class InboundPacket extends BasePacket {
     )
   }
 
-  async unpack() {
-    throw new Error('Packet has not implemented the `unpack` method')
+  unpack(): Promise<void> {
+    return Promise.reject(new Error('Packet has not implemented the `unpack` method'))
   }
 }

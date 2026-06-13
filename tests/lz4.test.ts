@@ -125,7 +125,7 @@ describe('decompressLz4Block', () => {
   })
 
   test('decompresses a block with an extended literal length', () => {
-    const literals = new Array(17).fill(0x41)
+    const literals = new Array<number>(17).fill(0x41)
     // token 0xf0 -> literal length 15, extension byte 0x02 -> 17 literals
     const block = new Uint8Array([0xf0, 0x02, ...literals])
 
@@ -154,7 +154,12 @@ describe('decompressLz4Sequence', () => {
 
     const decompressed = decompressLz4Sequence(sequence, 64)
 
-    expect(Array.from(decompressed)).toEqual([...new Array(11).fill(0x78), 0x01, 0x02, 0x03])
+    expect(Array.from(decompressed)).toEqual([
+      ...new Array<number>(11).fill(0x78),
+      0x01,
+      0x02,
+      0x03
+    ])
   })
 })
 

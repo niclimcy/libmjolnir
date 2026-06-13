@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { describe, expect, test } from 'vitest'
 import { PitData } from '../../src/libpit/PitData'
+import { PitEntry } from '../../src/libpit/PitEntry'
 
 const SAMPLES_DIR = 'tests/libpit/samples'
 const LEGACY_SAMPLE = `${SAMPLES_DIR}/i9100-stock-sample.pit`
@@ -78,7 +79,7 @@ describe('getPaddedSize', () => {
 
   test('leaves an exact multiple of the boundary unchanged', () => {
     const data = new PitData()
-    data.entries = new Array(217) // 28 + 217 * 132 = 28672 = 7 * 4096
+    data.entries = new Array<PitEntry>(217) // 28 + 217 * 132 = 28672 = 7 * 4096
     expect(data.getDataSize()).toBe(28672)
     expect(data.getPaddedSize()).toBe(28672)
   })
