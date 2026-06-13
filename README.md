@@ -20,9 +20,6 @@ A WebUSB implementation of the Odin protocol, used for interfacing with Samsung 
 - Device Reboot
 - Erase userdata
 - Flash partition
-
-### Planned features
-
 - Upload PIT
 
 ## Building

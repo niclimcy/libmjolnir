@@ -11,11 +11,13 @@ import { DeviceTypePacket } from './packets/outbound/DeviceTypePacket'
 import { DumpPartPitFilePacket } from './packets/outbound/DumpPartPitFilePacket'
 import { EndModemFileTransferPacket } from './packets/outbound/EndModemFileTransferPacket'
 import { EndPhoneFileTransferPacket } from './packets/outbound/EndPhoneFileTransferPacket'
+import { EndPitFileTransferPacket } from './packets/outbound/EndPitFileTransferPacket'
 import { EndSessionPacket, EndSessionRequest } from './packets/outbound/EndSessionPacket'
 import { EraseUserdataPacket } from './packets/outbound/EraseUserdataPacket'
 import { FilePartSizePacket } from './packets/outbound/FilePartSizePacket'
 import { FileTransferPacket, FileTransferRequest } from './packets/outbound/FileTransferPacket'
 import { FlashPartFileTransferPacket } from './packets/outbound/FlashPartFileTransferPacket'
+import { FlashPartPitFilePacket } from './packets/outbound/FlashPartPitFilePacket'
 import { OutboundPacket } from './packets/outbound/OutboundPacket'
 import { PitFilePacket, PitFileRequest } from './packets/outbound/PitFilePacket'
 import { SendFilePartPacket } from './packets/outbound/SendFilePartPacket'
@@ -266,6 +268,40 @@ export class OdinDevice {
 
     this._devicePit = pitData
     return pitData
+  }
+
+  /**
+   * Flash (upload) a PIT partition table to the device, repartitioning it.
+   * @param pit - a PitData instance, or raw .pit file bytes
+   */
+  async flashPit(pit: PitData | Uint8Array) {
+    await this.beginSession()
+
+    let pitBytes: Uint8Array
+    if (pit instanceof PitData) {
+      pitBytes = new Uint8Array(pit.getDataSize())
+      pit.pack(pitBytes)
+    } else {
+      pitBytes = pit
+    }
+    const fileSize = pitBytes.byteLength
+
+    await this.sendPacket(new PitFilePacket(PitFileRequest.Flash))
+    await this.receivePacket(PitFileResponse)
+
+    await this.sendPacket(new FlashPartPitFilePacket(fileSize))
+    await this.receivePacket(PitFileResponse)
+
+    await this.sendPacket(new SendFilePartPacket(pitBytes, fileSize))
+    await this.receivePacket(PitFileResponse)
+
+    await this.sendPacket(new EndPitFileTransferPacket(fileSize))
+    await this.receivePacket(PitFileResponse)
+
+    await this.endSession()
+
+    // the device PIT changed; drop the stale cache
+    delete this._devicePit
   }
 
   /**

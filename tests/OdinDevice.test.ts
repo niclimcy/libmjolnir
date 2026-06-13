@@ -723,3 +723,63 @@ describe('flashPartition', () => {
     expect(readUint32LE(transferPacket, 4)).toBe(5)
   })
 })
+
+describe('flashPit', () => {
+  test('runs the full begin, flash and end flow for a PitData', async () => {
+    const { transport, sent, queue } = createFakeTransport()
+    const device = new OdinDevice(transport)
+
+    const pit = new PitData()
+    pit.unpack(readFixture(SAMPLE_PIT))
+    const dataSize = pit.getDataSize()
+
+    queue.push(response(ResponseType.SessionSetup, 0)) // beginSession
+    queue.push(response(ResponseType.PitFile)) // Flash init
+    queue.push(response(ResponseType.PitFile)) // FlashPart size
+    queue.push(response(ResponseType.PitFile)) // data ack
+    queue.push(response(ResponseType.PitFile)) // end transfer
+    queue.push(response(ResponseType.EndSession)) // endSession
+
+    vi.useFakeTimers()
+    const flash = device.flashPit(pit)
+    await vi.runAllTimersAsync()
+    await flash
+
+    expect(readUint32LE(sent[1]!, 0)).toBe(0x65) // PitFile control
+    expect(readUint32LE(sent[1]!, 4)).toBe(0) // Flash request
+
+    expect(readUint32LE(sent[2]!, 0)).toBe(0x65)
+    expect(readUint32LE(sent[2]!, 4)).toBe(2) // Part request
+    expect(readUint32LE(sent[2]!, 8)).toBe(dataSize)
+
+    expect(sent[3]!.byteLength).toBe(dataSize) // raw PIT data
+
+    expect(readUint32LE(sent[4]!, 0)).toBe(0x65)
+    expect(readUint32LE(sent[4]!, 4)).toBe(3) // EndTransfer request
+    expect(readUint32LE(sent[4]!, 8)).toBe(dataSize)
+
+    expect(device._flashSessionStarted).toBe(false)
+    expect(device._devicePit).toBeUndefined()
+  })
+
+  test('sends raw bytes verbatim when given a Uint8Array', async () => {
+    const { transport, sent, queue } = createFakeTransport()
+    const device = new OdinDevice(transport)
+    device._flashSessionStarted = true // skip the begin-session delay
+
+    const pitBytes = readFixture(SAMPLE_PIT)
+
+    queue.push(response(ResponseType.PitFile)) // Flash init
+    queue.push(response(ResponseType.PitFile)) // FlashPart size
+    queue.push(response(ResponseType.PitFile)) // data ack
+    queue.push(response(ResponseType.PitFile)) // end transfer
+    queue.push(response(ResponseType.EndSession)) // endSession
+
+    await device.flashPit(pitBytes)
+
+    expect(readUint32LE(sent[1]!, 8)).toBe(pitBytes.byteLength) // FlashPart size
+    expect(sent[2]!.byteLength).toBe(pitBytes.byteLength) // raw data length
+    expect(sent[2]!).toEqual(pitBytes)
+    expect(readUint32LE(sent[3]!, 8)).toBe(pitBytes.byteLength) // EndTransfer size
+  })
+})

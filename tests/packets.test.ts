@@ -4,7 +4,9 @@ import { SessionSetupResponse } from '../src/packets/inbound/SessionSetupRespons
 import { BeginSessionPacket } from '../src/packets/outbound/BeginSessionPacket'
 import { EndModemFileTransferPacket } from '../src/packets/outbound/EndModemFileTransferPacket'
 import { EndPhoneFileTransferPacket } from '../src/packets/outbound/EndPhoneFileTransferPacket'
+import { EndPitFileTransferPacket } from '../src/packets/outbound/EndPitFileTransferPacket'
 import { FlashPartFileTransferPacket } from '../src/packets/outbound/FlashPartFileTransferPacket'
+import { FlashPartPitFilePacket } from '../src/packets/outbound/FlashPartPitFilePacket'
 import { OutboundPacket } from '../src/packets/outbound/OutboundPacket'
 import { TotalBytesPacket } from '../src/packets/outbound/TotalBytesPacket'
 
@@ -115,6 +117,28 @@ describe('FlashPartFileTransferPacket', () => {
     packet.pack()
 
     expect(packedInteger(packet, 4)).toBe(0x06)
+  })
+})
+
+describe('FlashPartPitFilePacket', () => {
+  test('packs the PIT byte size as a Part request', () => {
+    const packet = new FlashPartPitFilePacket(4096)
+    packet.pack()
+
+    expect(packedInteger(packet, 0)).toBe(0x65)
+    expect(packedInteger(packet, 4)).toBe(0x02)
+    expect(packedInteger(packet, 8)).toBe(4096)
+  })
+})
+
+describe('EndPitFileTransferPacket', () => {
+  test('packs the PIT byte size as an EndTransfer request', () => {
+    const packet = new EndPitFileTransferPacket(4096)
+    packet.pack()
+
+    expect(packedInteger(packet, 0)).toBe(0x65)
+    expect(packedInteger(packet, 4)).toBe(0x03)
+    expect(packedInteger(packet, 8)).toBe(4096)
   })
 })
 
