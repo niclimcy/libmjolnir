@@ -77,7 +77,7 @@ function buildLz4Frame(contentSize: number, blockDataSizes: number[]): Uint8Arra
 
   view.setUint32(0, 0x184d2204, true)
   frame[4] = FLG_DEFAULT
-  frame[5] = 4 << 4
+  frame[5] = 6 << 4
   view.setUint32(6, contentSize, true)
   view.setUint32(10, 0, true)
   frame[14] = 0xff
@@ -635,6 +635,17 @@ describe('sendLz4File', () => {
 
     expect(readUint32LE(sent[0]!, 0)).toBe(0x66) // FileTransfer control
     expect(readUint32LE(sent[0]!, 4)).toBe(5) // Lz4Flash request
+
+    frame[5] = 4 << 4 // Reduce block size to 64KB to force client side decompression
+
+    queue.push(response(ResponseType.FileTransfer)) // Flash ack
+    queue.push(response(ResponseType.FileTransfer)) // FlashPart ack
+    queue.push(response(ResponseType.SendFilePart, 0))
+    queue.push(response(ResponseType.FileTransfer)) // end ack
+
+    await device.sendLz4File(new Blob([frame]), 0, 0, 5)
+
+    expect(readUint32LE(sent[8]!, 4)).toBe(0) // Flash request (not Lz4)
   })
 
   test('decompresses on the host when the device lacks LZ4 support', async () => {

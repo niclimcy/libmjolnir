@@ -412,7 +412,7 @@ export class OdinDevice {
   ) {
     const header = new Uint8Array(await fileData.slice(0, 32).arrayBuffer())
     const lz4Header = parseLz4FrameHeader(header)
-    const lz4 = this._lz4Supported
+    const lz4 = this._lz4Supported && lz4Header.blockMaxSize === 1024 * 1024
 
     await this.sendPacket(
       new FileTransferPacket(lz4 ? FileTransferRequest.Lz4Flash : FileTransferRequest.Flash)
