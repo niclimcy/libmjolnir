@@ -1,23 +1,41 @@
-name: Build Library
-on:
-  push:
-    branches: ['main']
-  workflow_dispatch:
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+name: Build
+
+on: [push, pull_request, workflow_dispatch]
+
 jobs:
-  build-library:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
         with:
           version: 11
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Build Library
-        run: pnpm build
+
+      - run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm format --check --no-write
+          pnpm lint
+          pnpm test
+
+      - working-directory: example
+        run: |
+          pnpm build
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: example/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    permissions:
+      id-token: write
+      pages: write
+
+    steps:
+      - uses: actions/deploy-pages@v5
